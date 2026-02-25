@@ -9,7 +9,7 @@ export type ButtonSize = 'sm' | 'md' | 'lg';
   standalone: true,
   imports: [NgClass, NgIf],
   templateUrl: './button.component.html',
-  styleUrl: './button.component.css'
+  styleUrls: ['./button.component.css']
 })
 export class ButtonComponent {
   @Input() variant: ButtonVariant = 'primary';
