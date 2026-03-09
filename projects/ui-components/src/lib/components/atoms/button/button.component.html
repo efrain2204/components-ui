@@ -1,0 +1,6 @@
+<button type="button" class="btn" [ngClass]="[
+    'btn-' + type,
+    fullWidth ? 'btn-block' : ''
+  ]" [disabled]="disabled" (click)="onClick($event)">
+    <ng-content></ng-content>
+</button>

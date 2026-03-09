@@ -1,4 +1,4 @@
 /*
  * Public API Surface of ui-components
  */
-export * from './lib/components/button/button.component';
+// export * from './lib/components/button/button.component';

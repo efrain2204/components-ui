@@ -1,0 +1,23 @@
+<!-- Backdrop -->
+<div class="modal-backdrop fade show" (click)="onClose()"></div>
+
+<!-- Wrapper -->
+<div class="modal-wrapper">
+  <div class="modal-container" [ngClass]="size" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+
+    <!-- Header -->
+    <div class="modal-header">
+      <h5 class="modal-title">{{ title }}</h5>
+
+      <!-- BOTÓN X -->
+      <button type="button" class="btn-close" aria-label="Close" (click)="onClose()">X
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="modal-body">
+      <ng-content></ng-content>
+    </div>
+
+  </div>
+</div>

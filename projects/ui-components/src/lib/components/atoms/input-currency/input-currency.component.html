@@ -1,0 +1,6 @@
+<div class="currency-wrapper">
+    <span class="symbol">{{ currencySymbol }}</span>
+
+    <input type="text" [value]="displayValue" [placeholder]="placeholder" [disabled]="disabled"
+        (keydown)="onKeyDown($event)" (input)="onInput($event)" (paste)="onPaste($event)" (blur)="onBlur()" />
+</div>

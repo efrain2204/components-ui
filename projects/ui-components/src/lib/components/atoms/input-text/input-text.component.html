@@ -1,0 +1,20 @@
+<div class="mb-3">
+    <label *ngIf="label" [for]="id" class="form-label">
+        {{ label }}
+    </label>
+
+    <input [id]="id" class="form-control" [ngClass]="{ 'is-invalid': showError }" [type]="type"
+        [placeholder]="placeholder" [formControl]="control" [disabled]="disabled" />
+
+    <div *ngIf="showError" class="invalid-feedback">
+        <div *ngIf="control.errors?.['required']">
+            Este campo es obligatorio
+        </div>
+        <div *ngIf="control.errors?.['email']">
+            Formato de email inválido
+        </div>
+        <div *ngIf="control.errors?.['minlength']">
+            Mínimo {{ control.errors?.['minlength'].requiredLength }} caracteres
+        </div>
+    </div>
+</div>

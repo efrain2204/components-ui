@@ -1,0 +1,25 @@
+<div class="combo-wrapper">
+  <label *ngIf="label" class="combo-label">{{ label }}</label>
+
+  <select
+    class="combo-select"
+    [formControl]="control"
+    [compareWith]="compareFn"
+    [disabled]="disabled"
+  >
+    <option [ngValue]="null" disabled>
+      {{ placeholder }}
+    </option>
+
+    <option
+      *ngFor="let option of options"
+      [ngValue]="option"
+    >
+      {{ option.value }}
+    </option>
+  </select>
+
+  <small class="error" *ngIf="control.touched && control.invalid">
+    Campo requerido
+  </small>
+</div>

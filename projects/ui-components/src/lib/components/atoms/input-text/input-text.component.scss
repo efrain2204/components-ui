@@ -1,0 +1,75 @@
+/* El componente siempre se adapta al contenedor padre */
+:host {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Wrapper del input */
+.mb-3 {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Label */
+.form-label {
+  display: block;
+  margin-bottom: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #212529;
+}
+
+/* Input base (Bootstrap-like) */
+.form-control {
+  width: 100%;
+  min-width: 0;
+  /* CLAVE para flex y grid */
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #212529;
+
+  background-color: #fff;
+  background-clip: padding-box;
+
+  border: 1px solid #ced4da;
+  border-radius: 0.375rem;
+
+  box-sizing: border-box;
+  transition: border-color 0.15s ease-in-out,
+    box-shadow 0.15s ease-in-out;
+
+  &:focus {
+    outline: 0;
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+  }
+
+  &:disabled {
+    background-color: #e9ecef;
+    opacity: 1;
+  }
+}
+
+/* Mensajes de error */
+.text-danger {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+}
+
+/* Responsive tweaks (opcional) */
+@media (max-width: 576px) {
+  .form-control {
+    font-size: 0.95rem;
+    padding: 0.45rem 0.65rem;
+  }
+}
+
+.invalid-feedback {
+  width: 100%;
+  margin-top: 0.25rem;
+  font-size: 0.875em;
+  color: #dc3545;
+}
