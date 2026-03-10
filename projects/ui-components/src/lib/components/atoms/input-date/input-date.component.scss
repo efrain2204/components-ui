@@ -1,0 +1,196 @@
+// ── Variables / tokens ──────────────────────────────────────────────────────
+:host {
+  --ui-date-font:          inherit;
+
+  // colores base
+  --ui-date-label:         #4b5563;
+  --ui-date-border:        #d1d5db;
+  --ui-date-border-focus:  #2563eb;
+  --ui-date-border-error:  #ef4444;
+  --ui-date-bg:            #ffffff;
+  --ui-date-bg-disabled:   #f3f4f6;
+  --ui-date-text:          #111827;
+  --ui-date-placeholder:   #9ca3af;
+  --ui-date-icon:          #6b7280;
+  --ui-date-icon-focus:    #2563eb;
+  --ui-date-hint:          #6b7280;
+  --ui-date-error:         #ef4444;
+  --ui-date-required:      #ef4444;
+
+  // sombra foco
+  --ui-date-shadow-focus:  0 0 0 3px rgba(37, 99, 235, 0.15);
+  --ui-date-shadow-error:  0 0 0 3px rgba(239, 68, 68, 0.15);
+
+  // radio
+  --ui-date-radius:        8px;
+
+  display: block;
+  font-family: var(--ui-date-font);
+}
+
+// ── Bloque principal ─────────────────────────────────────────────────────────
+.ui-input-date {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+
+  // ── Label ────────────────────────────────────────────────────────────────
+  &__label {
+    font-size: 0.8125rem;   // 13px
+    font-weight: 500;
+    color: var(--ui-date-label);
+    line-height: 1;
+    transition: color 0.2s ease;
+  }
+
+  &__required {
+    color: var(--ui-date-required);
+    margin-left: 2px;
+  }
+
+  // ── Wrapper del input ─────────────────────────────────────────────────────
+  &__wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: var(--ui-date-bg);
+    border: 1.5px solid var(--ui-date-border);
+    border-radius: var(--ui-date-radius);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    overflow: hidden;
+  }
+
+  // ── Icono calendario ─────────────────────────────────────────────────────
+  &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: var(--ui-date-icon);
+    pointer-events: none;
+    transition: color 0.2s ease;
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  // ── Input nativo ─────────────────────────────────────────────────────────
+  &__input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--ui-date-text);
+    font-family: inherit;
+    font-size: inherit;
+    line-height: 1;
+    cursor: pointer;
+    min-width: 0;
+
+    // Oculta el icono nativo del navegador en webkit
+    &::-webkit-calendar-picker-indicator {
+      opacity: 0;
+      position: absolute;
+      right: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      color: var(--ui-date-placeholder);
+    }
+  }
+
+  // ── Footer: hint / error ─────────────────────────────────────────────────
+  &__footer {
+    min-height: 16px;
+  }
+
+  &__hint {
+    font-size: 0.75rem;
+    color: var(--ui-date-hint);
+  }
+
+  &__error {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+    color: var(--ui-date-error);
+
+    svg {
+      flex-shrink: 0;
+    }
+  }
+
+  // ── Modificadores de estado ───────────────────────────────────────────────
+  &--focused &__wrapper {
+    border-color: var(--ui-date-border-focus);
+    box-shadow: var(--ui-date-shadow-focus);
+  }
+
+  &--focused &__label {
+    color: var(--ui-date-border-focus);
+  }
+
+  &--focused &__icon {
+    color: var(--ui-date-icon-focus);
+  }
+
+  &--error &__wrapper {
+    border-color: var(--ui-date-border-error);
+    box-shadow: var(--ui-date-shadow-error);
+  }
+
+  &--error &__label {
+    color: var(--ui-date-border-error);
+  }
+
+  &--disabled &__wrapper {
+    background: var(--ui-date-bg-disabled);
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+
+  // ── Tamaños ───────────────────────────────────────────────────────────────
+  &--sm {
+    .ui-input-date__wrapper {
+      padding: 6px 10px;
+      gap: 6px;
+    }
+    .ui-input-date__input { font-size: 0.8125rem; }
+    .ui-input-date__icon svg { width: 14px; height: 14px; }
+  }
+
+  &--md {
+    .ui-input-date__wrapper {
+      padding: 10px 14px;
+      gap: 8px;
+    }
+    .ui-input-date__input { font-size: 0.9375rem; }
+  }
+
+  &--lg {
+    .ui-input-date__wrapper {
+      padding: 14px 16px;
+      gap: 10px;
+    }
+    .ui-input-date__input { font-size: 1rem; }
+    .ui-input-date__icon svg { width: 18px; height: 18px; }
+  }
+}
+
+// ── Responsive ────────────────────────────────────────────────────────────────
+@media (max-width: 480px) {
+  .ui-input-date {
+    &--md .ui-input-date__wrapper { padding: 9px 12px; }
+    &--lg .ui-input-date__wrapper { padding: 11px 14px; }
+
+    &__input { font-size: 16px !important; } // evita zoom en iOS
+  }
+}

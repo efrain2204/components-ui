@@ -1,25 +1,135 @@
-<div class="combo-wrapper">
-  <label *ngIf="label" class="combo-label">{{ label }}</label>
+<!--
+  #comboboxRoot: referencia para detectar clicks fuera con contains().
+  El dropdown usa (mousedown) con stopPropagation para no cerrar al interactuar.
+-->
+<div #comboboxRoot class="ui-combobox" [class]="'ui-combobox--' + size" [class.ui-combobox--open]="isOpen()"
+  [class.ui-combobox--has-value]="hasValue()" [class.ui-combobox--error]="hasError()"
+  [class.ui-combobox--disabled]="disabled" [class.ui-combobox--multiple]="multiple">
+  <!-- Label -->
+  <label class="ui-combobox__label" *ngIf="label" (mousedown)="toggle()">
+    {{ label }}
+    <span class="ui-combobox__required" *ngIf="required">*</span>
+  </label>
 
-  <select
-    class="combo-select"
-    [formControl]="control"
-    [compareWith]="compareFn"
-    [disabled]="disabled"
-  >
-    <option [ngValue]="null" disabled>
-      {{ placeholder }}
-    </option>
+  <!-- Trigger -->
+  <div class="ui-combobox__trigger" role="combobox" [attr.aria-expanded]="isOpen()" [attr.aria-disabled]="disabled"
+    [attr.aria-required]="required" [attr.tabindex]="disabled ? -1 : 0" (mousedown)="toggle()"
+    (focus)="isFocused.set(true)" (blur)="isFocused.set(false)" (keydown)="onTriggerKeydown($event)">
+    <!-- Tags (multiple) -->
+    <div class="ui-combobox__tags" *ngIf="multiple && hasValue()">
+      <span class="ui-combobox__tag" *ngFor="let opt of selectedOptions()">
+        {{ opt.label }}
+        <button class="ui-combobox__tag-remove" type="button" (mousedown)="removeTag(opt.value, $event)"
+          [attr.aria-label]="'Quitar ' + opt.label">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+            stroke-linecap="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </span>
+    </div>
 
-    <option
-      *ngFor="let option of options"
-      [ngValue]="option"
-    >
-      {{ option.value }}
-    </option>
-  </select>
+    <!-- Valor / Placeholder -->
+    <span class="ui-combobox__value" *ngIf="!multiple || !hasValue()"
+      [class.ui-combobox__value--placeholder]="!hasValue()">
+      {{ hasValue() ? displayLabel() : placeholder }}
+    </span>
 
-  <small class="error" *ngIf="control.touched && control.invalid">
-    Campo requerido
-  </small>
+    <!-- Sufijo -->
+    <div class="ui-combobox__suffix">
+      <button *ngIf="hasValue() && !disabled" class="ui-combobox__clear" type="button" (mousedown)="clearAll($event)"
+        aria-label="Limpiar selección">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+          stroke-linecap="round">
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+      <svg class="ui-combobox__chevron" [class.ui-combobox__chevron--open]="isOpen()" xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+        stroke-linejoin="round">
+        <polyline points="6 9 12 15 18 9" />
+      </svg>
+    </div>
+  </div>
+
+  <!-- Dropdown -->
+  <div class="ui-combobox__dropdown" *ngIf="isOpen()" role="listbox" (mousedown)="$event.stopPropagation()">
+    <!-- Búsqueda -->
+    <div class="ui-combobox__search-wrapper" *ngIf="searchable">
+      <svg class="ui-combobox__search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8" />
+        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+      </svg>
+      <input #searchInput class="ui-combobox__search" type="text" placeholder="Buscar..." autocomplete="off"
+        [value]="searchQuery()" (input)="onSearch($event)" (mousedown)="$event.stopPropagation()" />
+    </div>
+
+    <!-- Opciones sin grupos -->
+    <ng-container *ngIf="!groups()">
+      <div class="ui-combobox__option" *ngFor="let option of filteredOptions(); let i = index"
+        [class.ui-combobox__option--selected]="isSelected(option)"
+        [class.ui-combobox__option--active]="activeIndex() === i"
+        [class.ui-combobox__option--disabled]="option.disabled" role="option" [attr.aria-selected]="isSelected(option)"
+        (mousedown)="selectOption(option, $event)">
+        <span class="ui-combobox__option-check" *ngIf="multiple">
+          <svg *ngIf="isSelected(option)" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" fill="none"
+            stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <polyline points="2 6 5 9 10 3" />
+          </svg>
+        </span>
+        <div class="ui-combobox__option-content">
+          <span class="ui-combobox__option-label">{{ option.label }}</span>
+          <span class="ui-combobox__option-hint" *ngIf="option.hint">{{ option.hint }}</span>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- Opciones con grupos -->
+    <ng-container *ngIf="groups()">
+      <ng-container *ngFor="let entry of groups()! | keyvalue">
+        <div class="ui-combobox__group-label" *ngIf="entry.key">{{ entry.key }}</div>
+        <div class="ui-combobox__option" *ngFor="let option of entry.value"
+          [class.ui-combobox__option--selected]="isSelected(option)"
+          [class.ui-combobox__option--disabled]="option.disabled" role="option"
+          [attr.aria-selected]="isSelected(option)" (mousedown)="selectOption(option, $event)">
+          <span class="ui-combobox__option-check" *ngIf="multiple">
+            <svg *ngIf="isSelected(option)" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" fill="none"
+              stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <polyline points="2 6 5 9 10 3" />
+            </svg>
+          </span>
+          <div class="ui-combobox__option-content">
+            <span class="ui-combobox__option-label">{{ option.label }}</span>
+            <span class="ui-combobox__option-hint" *ngIf="option.hint">{{ option.hint }}</span>
+          </div>
+        </div>
+      </ng-container>
+    </ng-container>
+
+    <!-- Empty state -->
+    <div class="ui-combobox__empty" *ngIf="!filteredOptions().length">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="11" cy="11" r="8" />
+        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+      </svg>
+      {{ emptyText }}
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="ui-combobox__footer">
+    <span class="ui-combobox__error" *ngIf="hasError()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2.5">
+        <circle cx="12" cy="12" r="10" />
+        <line x1="12" y1="8" x2="12" y2="12" />
+        <line x1="12" y1="16" x2="12.01" y2="16" />
+      </svg>
+      {{ errorMessage }}
+    </span>
+    <span class="ui-combobox__hint" *ngIf="hint && !hasError()">{{ hint }}</span>
+  </div>
 </div>

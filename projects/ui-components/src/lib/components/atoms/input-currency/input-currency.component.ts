@@ -1,10 +1,24 @@
-import { Component, ElementRef, forwardRef, Input, ViewChild } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { Component, computed, ElementRef, EventEmitter, forwardRef, Input, OnInit, Output, signal, ViewChild } from '@angular/core';
+import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
+
+export interface Currency {
+  code: string; // USD, PEN
+  symbol: string; // $, S/
+  label: string; // Dólar, Sol
+  locale: string; // en-US, es-PE
+}
+
+export const CURRENCIES: Currency[] = [
+  { code: 'PEN', symbol: 'S/', label: 'Sol peruano', locale: 'es-PE' },
+  { code: 'USD', symbol: '$', label: 'Dólar', locale: 'en-US' },
+];
 
 @Component({
-  selector: 'input-currency',
+  selector: 'ui-input-currency',
   standalone: true,
-  imports: [],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+
   templateUrl: './input-currency.component.html',
   styleUrl: './input-currency.component.scss',
   providers: [{
@@ -13,95 +27,152 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
     multi: true
   }]
 })
-export class InputCurrencyComponent implements ControlValueAccessor {
-  @Input() currencySymbol = 'S/';
-  @Input() placeholder = '0.00';
+export class InputCurrencyComponent implements ControlValueAccessor, OnInit {
+  @Input() label: string = 'Monto';
+  @Input() placeholder: string = '0.00';
+  @Input() hint: string = '';
+  @Input() errorMessage: string = '';
+  @Input() disabled: boolean = false;
+  @Input() required: boolean = false;
+  @Input() size: 'sm' | 'md' | 'lg' = 'md';
+  @Input() currencies: Currency[] = CURRENCIES;
+  @Input() defaultCurrency: string = 'PEN'; // ISO code
 
-  private _value: number | null = null;
-  displayValue = '';
-  disabled = false;
+  /** Mínimo permitido */
+  @Input() min: number = 0;
 
-  onChange = (value: number | null) => {};
-  onTouched = () => {};
+  /** Máximo permitido (0 = sin límite) */
+  @Input() max: number = 0;
 
-  writeValue(value: number | null): void {
-    this._value = value;
-    this.displayValue = this.format(value);
+  /** Decimales a mostrar */
+  @Input() decimals: number = 2;
+
+  @Output() amountChange = new EventEmitter<number>();
+  @Output() currencyChange = new EventEmitter<Currency>();
+
+  isFocused = signal(false);
+  dropdownOpen = signal(false);
+  rawValue = signal('');
+  selectedCurrency = signal<Currency>(CURRENCIES[0]);
+
+  hasError = computed(() => !!this.errorMessage || !!this.rangeError());
+  errorText = computed(() => this.errorMessage || this.rangeError());
+  hasValue = computed(() => !!this.rawValue() && this.rawValue() !== '0');
+
+  rangeError = computed(() => {
+    const n = this.numericValue();
+    if (n === null) return '';
+    if (this.min > 0 && n < this.min)
+      return `El monto mínimo es ${this.formatDisplay(this.min)}`;
+    if (this.max > 0 && n > this.max)
+      return `El monto máximo es ${this.formatDisplay(this.max)}`;
+    return '';
+  });
+
+  numericValue = computed(() => {
+    const n = parseFloat(this.rawValue().replace(/,/g, ''));
+    return isNaN(n) ? null : n;
+  });
+
+  displayValue = computed(() => {
+    const n = this.numericValue();
+    if (n === null || !this.isFocused()) return this.rawValue();
+    return this.rawValue();
+  });
+
+  private onChange: (value: number | null) => void = () => { };
+  private onTouched: () => void = () => { };
+
+  ngOnInit(): void {
+    const found = this.currencies.find(c => c.code === this.defaultCurrency);
+    if (found) this.selectedCurrency.set(found);
   }
 
-  registerOnChange(fn: any): void {
+  // ── Dropdown moneda ───────────────────────────────────────────────────────
+  toggleDropdown(): void {
+    if (!this.disabled) this.dropdownOpen.update(v => !v);
+  }
+
+  selectCurrency(currency: Currency): void {
+    this.selectedCurrency.set(currency);
+    this.dropdownOpen.set(false);
+    this.currencyChange.emit(currency);
+  }
+
+  closeDropdown(): void {
+    this.dropdownOpen.set(false);
+  }
+
+  // ── Input ─────────────────────────────────────────────────────────────────
+  onFocus(event: FocusEvent): void {
+    this.isFocused.set(true);
+    // Muestra valor sin formato al enfocar
+    const input = event.target as HTMLInputElement;
+    const raw = this.rawValue().replace(/,/g, '');
+    input.value = raw === '0' || raw === '' ? '' : raw;
+  }
+
+  onBlur(event: FocusEvent): void {
+    this.isFocused.set(false);
+    this.onTouched();
+    // Formatea al perder foco
+    const n = this.numericValue();
+    if (n !== null) {
+      this.rawValue.set(this.formatRaw(n));
+    }
+  }
+
+  onInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    // Solo permite números, punto y coma
+    let val = input.value.replace(/[^0-9.,]/g, '');
+    // Permite solo un punto decimal
+    const parts = val.split('.');
+    if (parts.length > 2) val = parts[0] + '.' + parts.slice(1).join('');
+    // Limita decimales
+    if (parts[1]?.length > this.decimals) {
+      val = parts[0] + '.' + parts[1].slice(0, this.decimals);
+    }
+
+    this.rawValue.set(val);
+    input.value = val;
+
+    const n = parseFloat(val);
+    const emitVal = isNaN(n) ? null : n;
+    this.onChange(emitVal);
+    if (emitVal !== null) this.amountChange.emit(emitVal);
+  }
+
+  // ── Formatters ────────────────────────────────────────────────────────────
+  private formatRaw(n: number): string {
+    return n.toLocaleString(this.selectedCurrency().locale, {
+      minimumFractionDigits: this.decimals,
+      maximumFractionDigits: this.decimals,
+    });
+  }
+
+  formatDisplay(n: number): string {
+    return `${this.selectedCurrency().symbol} ${this.formatRaw(n)}`;
+  }
+
+  // ── ControlValueAccessor ──────────────────────────────────────────────────
+  writeValue(value: number | null): void {
+    if (value === null || value === undefined) {
+      this.rawValue.set('');
+    } else {
+      this.rawValue.set(this.formatRaw(value));
+    }
+  }
+
+  registerOnChange(fn: (value: number | null) => void): void {
     this.onChange = fn;
   }
 
-  registerOnTouched(fn: any): void {
+  registerOnTouched(fn: () => void): void {
     this.onTouched = fn;
   }
 
   setDisabledState(isDisabled: boolean): void {
     this.disabled = isDisabled;
-  }
-
-  // 🔒 BLOQUEA TECLAS INVÁLIDAS
-  onKeyDown(event: KeyboardEvent) {
-    const allowedKeys = [
-      'Backspace',
-      'Tab',
-      'ArrowLeft',
-      'ArrowRight',
-      'Delete'
-    ];
-
-    if (allowedKeys.includes(event.key)) return;
-
-    const isNumber = /^[0-9]$/.test(event.key);
-    const isDot = event.key === '.';
-
-    if (!isNumber && !isDot) {
-      event.preventDefault();
-    }
-
-    // Evitar múltiples puntos
-    if (isDot && this.displayValue.includes('.')) {
-      event.preventDefault();
-    }
-  }
-
-  // 🧼 Sanitiza entrada
-  onInput(event: Event) {
-    const input = event.target as HTMLInputElement;
-    let raw = input.value.replace(/[^0-9.]/g, '');
-
-    const parts = raw.split('.');
-    if (parts.length > 2) {
-      raw = parts[0] + '.' + parts[1];
-    }
-
-    this.displayValue = raw;
-
-    const numeric = parseFloat(raw);
-    this._value = !isNaN(numeric) ? numeric : null;
-
-    this.onChange(this._value);
-  }
-
-  // 📋 Controlar pegado
-  onPaste(event: ClipboardEvent) {
-    const pasteData = event.clipboardData?.getData('text') || '';
-    if (!/^\d*\.?\d*$/.test(pasteData)) {
-      event.preventDefault();
-    }
-  }
-
-  onBlur() {
-    this.displayValue = this.format(this._value);
-    this.onTouched();
-  }
-
-  private format(value: number | null): string {
-    if (value === null) return '';
-    return value.toLocaleString('es-PE', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    });
   }
 }

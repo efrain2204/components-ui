@@ -1,0 +1,148 @@
+:host {
+  --ui-ta-font:           inherit;
+  --ui-ta-label:          #4b5563;
+  --ui-ta-border:         #d1d5db;
+  --ui-ta-border-focus:   #2563eb;
+  --ui-ta-border-error:   #ef4444;
+  --ui-ta-bg:             #ffffff;
+  --ui-ta-bg-disabled:    #f3f4f6;
+  --ui-ta-text:           #111827;
+  --ui-ta-placeholder:    #9ca3af;
+  --ui-ta-hint:           #6b7280;
+  --ui-ta-error:          #ef4444;
+  --ui-ta-required:       #ef4444;
+  --ui-ta-counter:        #9ca3af;
+  --ui-ta-counter-over:   #ef4444;
+  --ui-ta-shadow-focus:   0 0 0 3px rgba(37, 99, 235, 0.15);
+  --ui-ta-shadow-error:   0 0 0 3px rgba(239, 68, 68, 0.15);
+  --ui-ta-radius:         8px;
+
+  display: block;
+  font-family: var(--ui-ta-font);
+}
+
+.ui-textarea {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+
+  // ── Label ─────────────────────────────────────────────────────────────────
+  &__label {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--ui-ta-label);
+    line-height: 1;
+    transition: color 0.2s ease;
+  }
+
+  &__required {
+    color: var(--ui-ta-required);
+    margin-left: 2px;
+  }
+
+  // ── Wrapper ───────────────────────────────────────────────────────────────
+  &__wrapper {
+    border: 1.5px solid var(--ui-ta-border);
+    border-radius: var(--ui-ta-radius);
+    background: var(--ui-ta-bg);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    overflow: hidden;
+  }
+
+  // ── Textarea nativo ───────────────────────────────────────────────────────
+  &__input {
+    display: block;
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--ui-ta-text);
+    font-family: inherit;
+    font-size: inherit;
+    line-height: 1.6;
+    box-sizing: border-box;
+    min-height: 0;
+
+    &::placeholder { color: var(--ui-ta-placeholder); }
+    &:disabled {
+      cursor: not-allowed;
+      color: var(--ui-ta-placeholder);
+    }
+  }
+
+  // ── Footer ────────────────────────────────────────────────────────────────
+  &__footer {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+    min-height: 16px;
+  }
+
+  &__footer-left { flex: 1; }
+
+  &__hint {
+    font-size: 0.75rem;
+    color: var(--ui-ta-hint);
+  }
+
+  &__error {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+    color: var(--ui-ta-error);
+    svg { flex-shrink: 0; }
+  }
+
+  &__counter {
+    font-size: 0.75rem;
+    color: var(--ui-ta-counter);
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: color 0.2s ease;
+
+    &--over {
+      color: var(--ui-ta-counter-over);
+      font-weight: 600;
+    }
+  }
+
+  // ── Estados ───────────────────────────────────────────────────────────────
+  &--focused &__wrapper {
+    border-color: var(--ui-ta-border-focus);
+    box-shadow: var(--ui-ta-shadow-focus);
+  }
+
+  &--focused &__label { color: var(--ui-ta-border-focus); }
+
+  &--error &__wrapper {
+    border-color: var(--ui-ta-border-error);
+    box-shadow: var(--ui-ta-shadow-error);
+  }
+
+  &--error &__label { color: var(--ui-ta-border-error); }
+
+  &--disabled &__wrapper {
+    background: var(--ui-ta-bg-disabled);
+    opacity: 0.7;
+  }
+
+  &--auto-resize &__input {
+    overflow: hidden;
+    resize: none !important;
+  }
+
+  // ── Tamaños ───────────────────────────────────────────────────────────────
+  &--sm &__input { padding: 6px 10px;  font-size: 0.8125rem; }
+  &--md &__input { padding: 10px 14px; font-size: 0.9375rem; }
+  &--lg &__input { padding: 14px 16px; font-size: 1rem; }
+}
+
+// ── Responsive ────────────────────────────────────────────────────────────────
+@media (max-width: 480px) {
+  .ui-textarea__input {
+    font-size: 16px !important; // evita zoom en iOS
+  }
+}

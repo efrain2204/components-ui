@@ -1,6 +1,76 @@
-<div class="currency-wrapper">
-    <span class="symbol">{{ currencySymbol }}</span>
+<div class="ui-input-currency" [class]="'ui-input-currency--' + size" [class.ui-input-currency--focused]="isFocused()"
+    [class.ui-input-currency--has-value]="hasValue()" [class.ui-input-currency--error]="hasError()"
+    [class.ui-input-currency--disabled]="disabled">
+    <!-- Label -->
+    <label class="ui-input-currency__label" *ngIf="label">
+        {{ label }}
+        <span class="ui-input-currency__required" *ngIf="required">*</span>
+    </label>
 
-    <input type="text" [value]="displayValue" [placeholder]="placeholder" [disabled]="disabled"
-        (keydown)="onKeyDown($event)" (input)="onInput($event)" (paste)="onPaste($event)" (blur)="onBlur()" />
+    <div class="ui-input-currency__wrapper">
+
+        <!-- Selector de moneda -->
+        <div class="ui-input-currency__currency" (click)="toggleDropdown()">
+            <span class="ui-input-currency__symbol">{{ selectedCurrency().symbol }}</span>
+            <span class="ui-input-currency__code">{{ selectedCurrency().code }}</span>
+            <svg class="ui-input-currency__chevron" [class.ui-input-currency__chevron--open]="dropdownOpen()"
+                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9" />
+            </svg>
+
+            <!-- Dropdown monedas -->
+            <div class="ui-input-currency__dropdown" *ngIf="dropdownOpen()" (click)="$event.stopPropagation()">
+                <div class="ui-input-currency__dropdown-item" *ngFor="let currency of currencies"
+                    [class.ui-input-currency__dropdown-item--active]="currency.code === selectedCurrency().code"
+                    (click)="selectCurrency(currency)">
+                    <span class="ui-input-currency__dropdown-symbol">{{ currency.symbol }}</span>
+                    <div class="ui-input-currency__dropdown-info">
+                        <span class="ui-input-currency__dropdown-code">{{ currency.code }}</span>
+                        <span class="ui-input-currency__dropdown-label">{{ currency.label }}</span>
+                    </div>
+                    <svg *ngIf="currency.code === selectedCurrency().code" class="ui-input-currency__dropdown-check"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" fill="none" stroke="currentColor"
+                        stroke-width="2.5" stroke-linecap="round">
+                        <polyline points="2 6 5 9 10 3" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Divider -->
+        <div class="ui-input-currency__divider"></div>
+
+        <!-- Input numérico -->
+        <input class="ui-input-currency__input" type="text" inputmode="decimal" [placeholder]="placeholder"
+            [value]="rawValue()" [disabled]="disabled" [required]="required" (focus)="onFocus($event)"
+            (blur)="onBlur($event)" (input)="onInput($event)" />
+
+        <!-- Ícono moneda -->
+        <span class="ui-input-currency__icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M16 8h-6a2 2 0 000 4h4a2 2 0 010 4H8" />
+                <line x1="12" y1="6" x2="12" y2="8" />
+                <line x1="12" y1="16" x2="12" y2="18" />
+            </svg>
+        </span>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="ui-input-currency__footer">
+        <span class="ui-input-currency__error" *ngIf="hasError()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.5">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            {{ errorText() }}
+        </span>
+        <span class="ui-input-currency__hint" *ngIf="hint && !hasError()">{{ hint }}</span>
+    </div>
+
 </div>

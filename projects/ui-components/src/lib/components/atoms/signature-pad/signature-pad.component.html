@@ -1,0 +1,58 @@
+<div class="ui-signature" [class]="'ui-signature--' + size" [class.ui-signature--drawing]="isDrawing()"
+    [class.ui-signature--has-value]="hasValue()" [class.ui-signature--error]="hasError()"
+    [class.ui-signature--disabled]="disabled" [class.ui-signature--focused]="isFocused()">
+    <!-- Label -->
+    <div class="ui-signature__label" *ngIf="label">
+        {{ label }}
+        <span class="ui-signature__required" *ngIf="required">*</span>
+    </div>
+
+    <!-- Canvas wrapper -->
+    <div class="ui-signature__wrapper">
+
+        <!-- Placeholder text -->
+        <div class="ui-signature__placeholder" *ngIf="isEmpty() && !isDrawing()">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 20h9" />
+                <path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z" />
+            </svg>
+            <span>Firma aquí</span>
+        </div>
+
+        <!-- Canvas -->
+        <canvas #canvas class="ui-signature__canvas" [style.height.px]="height" (mousedown)="onMouseDown($event)"
+            (mousemove)="onMouseMove($event)" (mouseup)="onMouseUp()" (touchstart)="onTouchStart($event)"
+            (touchmove)="onTouchMove($event)" (touchend)="onTouchEnd()" (focus)="isFocused.set(true)"
+            (blur)="isFocused.set(false)"></canvas>
+
+        <!-- Acciones -->
+        <div class="ui-signature__actions">
+            <button *ngIf="hasValue() && !disabled" class="ui-signature__clear" type="button" (click)="clear()"
+                title="Limpiar firma">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="1 4 1 10 7 10" />
+                    <path d="M3.51 15a9 9 0 102.13-9.36L1 10" />
+                </svg>
+                Limpiar
+            </button>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="ui-signature__footer">
+        <span class="ui-signature__error" *ngIf="hasError()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.5">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            {{ errorMessage }}
+        </span>
+        <span class="ui-signature__hint" *ngIf="hint && !hasError()">{{ hint }}</span>
+    </div>
+
+</div>

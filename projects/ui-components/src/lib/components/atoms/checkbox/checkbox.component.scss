@@ -1,0 +1,214 @@
+:host {
+  --ui-cb-font: inherit;
+  --ui-cb-label: #111827;
+  --ui-cb-hint: #6b7280;
+  --ui-cb-required: #ef4444;
+  --ui-cb-error: #ef4444;
+
+  --ui-cb-border: #d1d5db;
+  --ui-cb-border-hover: #2563eb;
+  --ui-cb-border-focus: #2563eb;
+  --ui-cb-border-error: #ef4444;
+
+  --ui-cb-bg: #ffffff;
+  --ui-cb-bg-checked: #2563eb;
+  --ui-cb-bg-indeterminate: #2563eb;
+  --ui-cb-bg-disabled: #f3f4f6;
+
+  --ui-cb-check: #ffffff;
+  --ui-cb-shadow-focus: 0 0 0 3px rgba(37, 99, 235, 0.18);
+  --ui-cb-shadow-error: 0 0 0 3px rgba(239, 68, 68, 0.18);
+  --ui-cb-radius: 5px;
+  --ui-cb-transition: 0.18s ease;
+
+  display: block;
+  font-family: var(--ui-cb-font);
+}
+
+.ui-checkbox {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  // ── Fila principal ────────────────────────────────────────────────────────
+  &__row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    cursor: pointer;
+  }
+
+  // ── Caja visual ───────────────────────────────────────────────────────────
+  &__control {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--ui-cb-bg);
+    border: 1.5px solid var(--ui-cb-border);
+    border-radius: var(--ui-cb-radius);
+    transition:
+      background var(--ui-cb-transition),
+      border-color var(--ui-cb-transition),
+      box-shadow var(--ui-cb-transition);
+    outline: none;
+
+    &:hover {
+      border-color: var(--ui-cb-border-hover);
+    }
+  }
+
+  // ── Ícono ─────────────────────────────────────────────────────────────────
+  &__icon {
+    display: block;
+    color: var(--ui-cb-check);
+    animation: checkIn 0.15s ease;
+  }
+
+  // ── Texto ─────────────────────────────────────────────────────────────────
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding-top: 1px; // alinea visualmente con la caja
+  }
+
+  &__label {
+    font-size: 0.9rem;
+    color: var(--ui-cb-label);
+    line-height: 1.4;
+    user-select: none;
+  }
+
+  &__required {
+    color: var(--ui-cb-required);
+    margin-left: 2px;
+  }
+
+  &__hint {
+    font-size: 0.75rem;
+    color: var(--ui-cb-hint);
+    line-height: 1.3;
+  }
+
+  // ── Footer error ──────────────────────────────────────────────────────────
+  &__footer {
+    margin-top: 2px;
+  }
+
+  &__error {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+    color: var(--ui-cb-error);
+
+    svg {
+      flex-shrink: 0;
+    }
+  }
+
+  // ── Estado: checked ───────────────────────────────────────────────────────
+  &--checked &__control {
+    background: var(--ui-cb-bg-checked);
+    border-color: var(--ui-cb-bg-checked);
+  }
+
+  // ── Estado: indeterminate ─────────────────────────────────────────────────
+  &--indeterminate &__control {
+    background: var(--ui-cb-bg-indeterminate);
+    border-color: var(--ui-cb-bg-indeterminate);
+  }
+
+  // ── Estado: focused ───────────────────────────────────────────────────────
+  &--focused &__control {
+    border-color: var(--ui-cb-border-focus);
+    box-shadow: var(--ui-cb-shadow-focus);
+  }
+
+  // ── Estado: error ─────────────────────────────────────────────────────────
+  &--error &__control {
+    border-color: var(--ui-cb-border-error);
+  }
+
+  &--error#{&}--focused &__control {
+    box-shadow: var(--ui-cb-shadow-error);
+  }
+
+  // ── Estado: disabled ──────────────────────────────────────────────────────
+  &--disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+
+    .ui-checkbox__row,
+    .ui-checkbox__control {
+      cursor: not-allowed;
+    }
+  }
+
+  // ── Tamaños ───────────────────────────────────────────────────────────────
+  &--sm {
+    .ui-checkbox__control {
+      width: 15px;
+      height: 15px;
+    }
+
+    .ui-checkbox__icon {
+      width: 9px;
+      height: 9px;
+    }
+
+    .ui-checkbox__label {
+      font-size: 0.8125rem;
+    }
+
+    .ui-checkbox__row {
+      gap: 8px;
+    }
+  }
+
+  &--md {
+    .ui-checkbox__control {
+      width: 18px;
+      height: 18px;
+    }
+
+    .ui-checkbox__icon {
+      width: 11px;
+      height: 11px;
+    }
+  }
+
+  &--lg {
+    .ui-checkbox__control {
+      width: 22px;
+      height: 22px;
+    }
+
+    .ui-checkbox__icon {
+      width: 13px;
+      height: 13px;
+    }
+
+    .ui-checkbox__label {
+      font-size: 1rem;
+    }
+
+    .ui-checkbox__row {
+      gap: 12px;
+    }
+  }
+}
+
+// ── Animación checkmark ───────────────────────────────────────────────────────
+@keyframes checkIn {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

@@ -1,0 +1,61 @@
+<div class="ui-input-search" [class]="'ui-input-search--' + size" [class.ui-input-search--focused]="isFocused()"
+    [class.ui-input-search--has-value]="hasValue()" [class.ui-input-search--error]="hasError()"
+    [class.ui-input-search--disabled]="disabled" [class.ui-input-search--loading]="isLoading()">
+    <!-- Label -->
+    <label class="ui-input-search__label" *ngIf="label">
+        {{ label }}
+        <span class="ui-input-search__required" *ngIf="required">*</span>
+    </label>
+
+    <div class="ui-input-search__wrapper">
+
+        <!-- Ícono lupa -->
+        <span class="ui-input-search__icon-search">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+        </span>
+
+        <!-- Input -->
+        <input class="ui-input-search__input" type="search" autocomplete="off" [placeholder]="placeholder"
+            [value]="internalValue()" [disabled]="disabled" [required]="required" (focus)="onFocus()" (blur)="onBlur()"
+            (input)="onInputChange($event)" />
+
+        <!-- Spinner de debounce -->
+        <span class="ui-input-search__spinner" *ngIf="isLoading()">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2.5" stroke-linecap="round">
+                <circle cx="12" cy="12" r="9" stroke-opacity="0.25" />
+                <path d="M12 3a9 9 0 019 9" />
+            </svg>
+        </span>
+
+        <!-- Botón limpiar (X) -->
+        <button class="ui-input-search__clear" type="button" *ngIf="hasValue() && !isLoading() && !disabled"
+            (click)="clear()" aria-label="Limpiar búsqueda">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+        </button>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="ui-input-search__footer">
+        <span class="ui-input-search__error" *ngIf="hasError()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.5">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            {{ errorMessage }}
+        </span>
+        <span class="ui-input-search__hint" *ngIf="hint && !hasError()">{{ hint }}</span>
+    </div>
+
+</div>

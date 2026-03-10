@@ -1,0 +1,111 @@
+<div class="ui-file-upload" [class]="'ui-file-upload--' + size" [class.ui-file-upload--error]="hasError()"
+    [class.ui-file-upload--disabled]="disabled">
+    <!-- Label -->
+    <div class="ui-file-upload__label" *ngIf="label">
+        {{ label }}
+        <span class="ui-file-upload__required" *ngIf="required">*</span>
+    </div>
+
+    <!-- Input nativo oculto -->
+    <input #fileInput class="ui-file-upload__native" type="file" [accept]="accept" [multiple]="multiple"
+        [disabled]="disabled" (change)="onFileInputChange($event)" (focus)="onFocus()" (blur)="onBlur()"
+        aria-hidden="true" tabindex="-1" />
+
+    <!-- Zona Dropzone -->
+    <div *ngIf="dropzone" class="ui-file-upload__dropzone" [class.ui-file-upload__dropzone--dragging]="isDragging()"
+        [class.ui-file-upload__dropzone--focused]="isFocused()"
+        [class.ui-file-upload__dropzone--has-files]="hasFiles() && !multiple" role="button"
+        [attr.tabindex]="disabled ? -1 : 0" [attr.aria-disabled]="disabled" (click)="openFilePicker(fileInput)"
+        (keydown.enter)="openFilePicker(fileInput)" (keydown.space)="openFilePicker(fileInput)"
+        (dragover)="onDragOver($event)" (dragleave)="onDragLeave()" (drop)="onDrop($event)" (focus)="onFocus()"
+        (blur)="onBlur()">
+        <!-- Ícono nube -->
+        <div class="ui-file-upload__dropzone-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="16 16 12 12 8 16" />
+                <line x1="12" y1="12" x2="12" y2="21" />
+                <path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3" />
+            </svg>
+        </div>
+
+        <div class="ui-file-upload__dropzone-text">
+            <span class="ui-file-upload__dropzone-primary">
+                Arrastra archivos aquí o
+                <span class="ui-file-upload__dropzone-link">selecciona</span>
+            </span>
+            <span class="ui-file-upload__dropzone-secondary" *ngIf="accept !== '*/*' || maxSizeMb > 0">
+                <ng-container *ngIf="accept !== '*/*'">{{ accept }}</ng-container>
+                <ng-container *ngIf="maxSizeMb > 0"> · Máx {{ maxSizeMb }} MB</ng-container>
+            </span>
+        </div>
+    </div>
+
+    <!-- Botón simple (sin dropzone) -->
+    <button *ngIf="!dropzone" type="button" class="ui-file-upload__btn" [disabled]="disabled"
+        (click)="openFilePicker(fileInput)">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+            <polyline points="17 8 12 3 7 8" />
+            <line x1="12" y1="3" x2="12" y2="15" />
+        </svg>
+        Seleccionar {{ multiple ? 'archivos' : 'archivo' }}
+    </button>
+
+    <!-- Lista de archivos -->
+    <div class="ui-file-upload__list" *ngIf="hasFiles()">
+        <div class="ui-file-upload__file" *ngFor="let file of files(); let i = index">
+            <!-- Preview imagen o ícono -->
+            <div class="ui-file-upload__file-thumb">
+                <img *ngIf="isImage(file) && file.preview" [src]="file.preview" [alt]="file.name"
+                    class="ui-file-upload__file-preview" />
+                <!-- PDF icon -->
+                <svg *ngIf="fileIcon(file) === 'pdf'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="1.5">
+                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="9" y1="13" x2="15" y2="13" />
+                    <line x1="9" y1="17" x2="12" y2="17" />
+                </svg>
+                <!-- Generic file icon -->
+                <svg *ngIf="fileIcon(file) === 'file'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z" />
+                    <polyline points="13 2 13 9 20 9" />
+                </svg>
+            </div>
+
+            <!-- Info -->
+            <div class="ui-file-upload__file-info">
+                <span class="ui-file-upload__file-name">{{ file.name }}</span>
+                <span class="ui-file-upload__file-size">{{ formatSize(file.size) }}</span>
+            </div>
+
+            <!-- Eliminar -->
+            <button class="ui-file-upload__file-remove" type="button" [disabled]="disabled" (click)="removeFile(i)"
+                aria-label="Eliminar archivo">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2.5" stroke-linecap="round">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="ui-file-upload__footer">
+        <span class="ui-file-upload__error" *ngIf="hasError()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.5">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            {{ errorText() }}
+        </span>
+        <span class="ui-file-upload__hint" *ngIf="hint && !hasError()">{{ hint }}</span>
+    </div>
+
+</div>

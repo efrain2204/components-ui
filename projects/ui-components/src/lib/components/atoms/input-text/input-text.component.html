@@ -1,20 +1,113 @@
-<div class="mb-3">
-    <label *ngIf="label" [for]="id" class="form-label">
+<div class="ui-input-text" [class]="'ui-input-text--' + size" [class.ui-input-text--focused]="isFocused()"
+    [class.ui-input-text--has-value]="hasValue()" [class.ui-input-text--error]="hasError() || isOverLimit()"
+    [class.ui-input-text--disabled]="disabled" [class.ui-input-text--has-prefix]="hasPrefix()"
+    [class.ui-input-text--has-suffix]="hasSuffix()">
+    <!-- Label -->
+    <label class="ui-input-text__label" *ngIf="label">
         {{ label }}
+        <span class="ui-input-text__required" *ngIf="required">*</span>
     </label>
 
-    <input [id]="id" class="form-control" [ngClass]="{ 'is-invalid': showError }" [type]="type"
-        [placeholder]="placeholder" [formControl]="control" [disabled]="disabled" />
+    <!-- Wrapper -->
+    <div class="ui-input-text__wrapper">
 
-    <div *ngIf="showError" class="invalid-feedback">
-        <div *ngIf="control.errors?.['required']">
-            Este campo es obligatorio
-        </div>
-        <div *ngIf="control.errors?.['email']">
-            Formato de email inválido
-        </div>
-        <div *ngIf="control.errors?.['minlength']">
-            Mínimo {{ control.errors?.['minlength'].requiredLength }} caracteres
-        </div>
+        <!-- Prefijo: ícono -->
+        <span class="ui-input-text__prefix-icon" *ngIf="prefixIcon">
+
+            <!-- user -->
+            <svg *ngIf="prefixIcon === 'user'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+            </svg>
+
+            <!-- email -->
+            <svg *ngIf="prefixIcon === 'email'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                <polyline points="22,6 12,13 2,6" />
+            </svg>
+
+            <!-- phone -->
+            <svg *ngIf="prefixIcon === 'phone'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path
+                    d="M22 16.92v3a2 2 0 01-2.18 2A19.79 19.79 0 013.07 9.81 19.79 19.79 0 01.1 1.18 2 2 0 012.1 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />
+            </svg>
+
+            <!-- globe -->
+            <svg *ngIf="prefixIcon === 'globe'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="2" y1="12" x2="22" y2="12" />
+                <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
+            </svg>
+
+            <!-- id -->
+            <svg *ngIf="prefixIcon === 'id'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="5" width="20" height="14" rx="2" />
+                <path d="M8 10a2 2 0 100 4 2 2 0 000-4z" />
+                <line x1="14" y1="10" x2="19" y2="10" />
+                <line x1="14" y1="14" x2="19" y2="14" />
+            </svg>
+
+            <!-- search -->
+            <svg *ngIf="prefixIcon === 'search'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+
+        </span>
+
+        <!-- Prefijo texto -->
+        <span class="ui-input-text__prefix-text" *ngIf="prefixText && !prefixIcon">
+            {{ prefixText }}
+        </span>
+
+        <!-- Input -->
+        <input class="ui-input-text__input" [type]="type" [placeholder]="placeholder" [value]="internalValue()"
+            [disabled]="disabled" [required]="required" [attr.maxlength]="maxLength > 0 ? maxLength : null"
+            (focus)="onFocus()" (blur)="onBlur()" (input)="onInput($event)" (keydown)="onKeydown($event)" />
+
+        <!-- Sufijo texto -->
+        <span class="ui-input-text__suffix-text" *ngIf="suffixText">
+            {{ suffixText }}
+        </span>
+
+        <!-- Botón limpiar -->
+        <button *ngIf="clearable && hasValue() && !disabled" class="ui-input-text__clear" type="button"
+            (click)="clear()" aria-label="Limpiar campo">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2.5" stroke-linecap="round">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+        </button>
+
     </div>
+
+    <!-- Footer -->
+    <div class="ui-input-text__footer">
+        <div class="ui-input-text__footer-left">
+            <span class="ui-input-text__error" *ngIf="hasError()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2.5">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="8" x2="12" y2="12" />
+                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+                {{ errorMessage }}
+            </span>
+            <span class="ui-input-text__hint" *ngIf="hint && !hasError()">{{ hint }}</span>
+        </div>
+
+        <!-- Contador -->
+        <span class="ui-input-text__counter" *ngIf="showCounter && maxLength > 0"
+            [class.ui-input-text__counter--over]="isOverLimit()">
+            {{ charCount() }} / {{ maxLength }}
+        </span>
+    </div>
+
 </div>

@@ -1,0 +1,198 @@
+:host {
+  --ui-search-font:          inherit;
+  --ui-search-label:         #4b5563;
+  --ui-search-border:        #d1d5db;
+  --ui-search-border-focus:  #2563eb;
+  --ui-search-border-error:  #ef4444;
+  --ui-search-bg:            #ffffff;
+  --ui-search-bg-disabled:   #f3f4f6;
+  --ui-search-text:          #111827;
+  --ui-search-placeholder:   #9ca3af;
+  --ui-search-icon:          #9ca3af;
+  --ui-search-icon-focus:    #2563eb;
+  --ui-search-clear:         #9ca3af;
+  --ui-search-clear-hover:   #374151;
+  --ui-search-spinner:       #2563eb;
+  --ui-search-hint:          #6b7280;
+  --ui-search-error:         #ef4444;
+  --ui-search-required:      #ef4444;
+  --ui-search-shadow-focus:  0 0 0 3px rgba(37, 99, 235, 0.15);
+  --ui-search-shadow-error:  0 0 0 3px rgba(239, 68, 68, 0.15);
+  --ui-search-radius:        8px;
+
+  display: block;
+  font-family: var(--ui-search-font);
+}
+
+.ui-input-search {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+
+  // ── Label ─────────────────────────────────────────────────────────────────
+  &__label {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--ui-search-label);
+    line-height: 1;
+    transition: color 0.2s ease;
+  }
+
+  &__required {
+    color: var(--ui-search-required);
+    margin-left: 2px;
+  }
+
+  // ── Wrapper ───────────────────────────────────────────────────────────────
+  &__wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: var(--ui-search-bg);
+    border: 1.5px solid var(--ui-search-border);
+    border-radius: var(--ui-search-radius);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  // ── Ícono lupa ────────────────────────────────────────────────────────────
+  &__icon-search {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    color: var(--ui-search-icon);
+    pointer-events: none;
+    transition: color 0.2s ease;
+
+    svg { width: 16px; height: 16px; }
+  }
+
+  // ── Input ─────────────────────────────────────────────────────────────────
+  &__input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--ui-search-text);
+    font-family: inherit;
+    font-size: inherit;
+    line-height: 1;
+    min-width: 0;
+
+    // Oculta el botón nativo de limpiar del type="search"
+    &::-webkit-search-cancel-button,
+    &::-webkit-search-decoration { -webkit-appearance: none; }
+
+    &::placeholder { color: var(--ui-search-placeholder); }
+    &:disabled { cursor: not-allowed; color: var(--ui-search-placeholder); }
+  }
+
+  // ── Spinner ───────────────────────────────────────────────────────────────
+  &__spinner {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    color: var(--ui-search-spinner);
+
+    svg {
+      width: 16px;
+      height: 16px;
+      animation: spin 0.7s linear infinite;
+    }
+  }
+
+  // ── Botón limpiar ─────────────────────────────────────────────────────────
+  &__clear {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--ui-search-clear);
+    padding: 0;
+    border-radius: 50%;
+    transition: color 0.15s ease, background 0.15s ease;
+
+    svg { width: 14px; height: 14px; }
+
+    &:hover {
+      color: var(--ui-search-clear-hover);
+    }
+  }
+
+  // ── Footer ────────────────────────────────────────────────────────────────
+  &__footer { min-height: 16px; }
+
+  &__hint {
+    font-size: 0.75rem;
+    color: var(--ui-search-hint);
+  }
+
+  &__error {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+    color: var(--ui-search-error);
+    svg { flex-shrink: 0; }
+  }
+
+  // ── Estados ───────────────────────────────────────────────────────────────
+  &--focused &__wrapper {
+    border-color: var(--ui-search-border-focus);
+    box-shadow: var(--ui-search-shadow-focus);
+  }
+
+  &--focused &__label      { color: var(--ui-search-border-focus); }
+  &--focused &__icon-search { color: var(--ui-search-icon-focus); }
+
+  &--error &__wrapper {
+    border-color: var(--ui-search-border-error);
+    box-shadow: var(--ui-search-shadow-error);
+  }
+
+  &--error &__label { color: var(--ui-search-border-error); }
+
+  &--disabled &__wrapper {
+    background: var(--ui-search-bg-disabled);
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  // ── Tamaños ───────────────────────────────────────────────────────────────
+  &--sm {
+    .ui-input-search__icon-search { padding: 6px 6px 6px 10px; svg { width: 14px; height: 14px; } }
+    .ui-input-search__input       { padding: 6px 4px; font-size: 0.8125rem; }
+    .ui-input-search__spinner     { padding-right: 8px; svg { width: 14px; height: 14px; } }
+    .ui-input-search__clear       { padding: 4px; margin-right: 6px; svg { width: 12px; height: 12px; } }
+  }
+
+  &--md {
+    .ui-input-search__icon-search { padding: 10px 8px 10px 14px; }
+    .ui-input-search__input       { padding: 10px 6px; font-size: 0.9375rem; }
+    .ui-input-search__spinner     { padding-right: 12px; }
+    .ui-input-search__clear       { padding: 5px; margin-right: 10px; }
+  }
+
+  &--lg {
+    .ui-input-search__icon-search { padding: 14px 10px 14px 16px; svg { width: 18px; height: 18px; } }
+    .ui-input-search__input       { padding: 14px 6px; font-size: 1rem; }
+    .ui-input-search__spinner     { padding-right: 14px; svg { width: 18px; height: 18px; } }
+    .ui-input-search__clear       { padding: 6px; margin-right: 12px; svg { width: 16px; height: 16px; } }
+  }
+}
+
+// ── Animación spinner ─────────────────────────────────────────────────────────
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+// ── Responsive ────────────────────────────────────────────────────────────────
+@media (max-width: 480px) {
+  .ui-input-search__input {
+    font-size: 16px !important; // evita zoom en iOS
+  }
+}

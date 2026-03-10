@@ -1,34 +1,368 @@
-.currency-wrapper {
+:host {
+    --ui-curr-font: inherit;
+    --ui-curr-label: #4b5563;
+    --ui-curr-required: #ef4444;
+    --ui-curr-hint: #6b7280;
+    --ui-curr-error: #ef4444;
+
+    --ui-curr-border: #d1d5db;
+    --ui-curr-border-focus: #2563eb;
+    --ui-curr-border-error: #ef4444;
+
+    --ui-curr-bg: #ffffff;
+    --ui-curr-bg-currency: #f9fafb;
+    --ui-curr-bg-disabled: #f3f4f6;
+    --ui-curr-bg-dropdown: #ffffff;
+
+    --ui-curr-text: #111827;
+    --ui-curr-text-symbol: #111827;
+    --ui-curr-text-code: #6b7280;
+    --ui-curr-placeholder: #9ca3af;
+    --ui-curr-icon: #9ca3af;
+    --ui-curr-icon-focus: #2563eb;
+    --ui-curr-divider: #e5e7eb;
+    --ui-curr-chevron: #9ca3af;
+
+    --ui-curr-dropdown-border: #e5e7eb;
+    --ui-curr-dropdown-hover: #f3f4f6;
+    --ui-curr-dropdown-active: #eff6ff;
+    --ui-curr-dropdown-check: #2563eb;
+    --ui-curr-dropdown-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+    --ui-curr-shadow-focus: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    --ui-curr-shadow-error: 0 0 0 3px rgba(239, 68, 68, 0.15);
+    --ui-curr-radius: 8px;
+
+    display: block;
+    font-family: var(--ui-curr-font);
+}
+
+.ui-input-currency {
     display: flex;
-    align-items: center;
-    border: 1px solid #cbd5e1;
-    border-radius: 12px;
-    padding: 0 12px;
-    background: white;
-    transition: 0.2s ease;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
 
-    &:focus-within {
-        border-color: #0f3d91;
-        box-shadow: 0 0 0 2px rgba(15, 61, 145, 0.15);
+    // ── Label ─────────────────────────────────────────────────────────────────
+    &__label {
+        font-size: 0.8125rem;
+        font-weight: 500;
+        color: var(--ui-curr-label);
+        line-height: 1;
+        transition: color 0.2s ease;
     }
 
-    .symbol {
+    &__required {
+        color: var(--ui-curr-required);
+        margin-left: 2px;
+    }
+
+    // ── Wrapper ───────────────────────────────────────────────────────────────
+    &__wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+        background: var(--ui-curr-bg);
+        border: 1.5px solid var(--ui-curr-border);
+        border-radius: var(--ui-curr-radius);
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        overflow: visible;
+    }
+
+    // ── Selector de moneda ────────────────────────────────────────────────────
+    &__currency {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        flex-shrink: 0;
+        cursor: pointer;
+        background: var(--ui-curr-bg-currency);
+        border-radius: calc(var(--ui-curr-radius) - 2px) 0 0 calc(var(--ui-curr-radius) - 2px);
+        transition: background 0.15s ease;
+        user-select: none;
+
+        &:hover {
+            background: #f0f0f0;
+        }
+    }
+
+    &__symbol {
+        font-weight: 700;
+        color: var(--ui-curr-text-symbol);
+        font-size: 1em;
+        line-height: 1;
+    }
+
+    &__code {
+        font-size: 0.75rem;
         font-weight: 600;
-        color: #334155;
-        margin-right: 6px;
-        font-size: 14px;
+        color: var(--ui-curr-text-code);
+        letter-spacing: 0.03em;
     }
 
-    input {
+    &__chevron {
+        width: 12px;
+        height: 12px;
+        color: var(--ui-curr-chevron);
+        transition: transform 0.2s ease;
+        flex-shrink: 0;
+
+        &--open {
+            transform: rotate(180deg);
+        }
+    }
+
+    // ── Dropdown ──────────────────────────────────────────────────────────────
+    &__dropdown {
+        position: absolute;
+        top: calc(100% + 6px);
+        left: 0;
+        min-width: 200px;
+        background: var(--ui-curr-bg-dropdown);
+        border: 1.5px solid var(--ui-curr-dropdown-border);
+        border-radius: var(--ui-curr-radius);
+        box-shadow: var(--ui-curr-dropdown-shadow);
+        z-index: 1000;
+        overflow: hidden;
+        animation: dropIn 0.15s ease;
+    }
+
+    &__dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        cursor: pointer;
+        transition: background 0.1s ease;
+
+        &:hover {
+            background: var(--ui-curr-dropdown-hover);
+        }
+
+        &--active {
+            background: var(--ui-curr-dropdown-active);
+        }
+    }
+
+    &__dropdown-symbol {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--ui-curr-text-symbol);
+        width: 20px;
+        text-align: center;
+        flex-shrink: 0;
+    }
+
+    &__dropdown-info {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+        flex: 1;
+    }
+
+    &__dropdown-code {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--ui-curr-text);
+    }
+
+    &__dropdown-label {
+        font-size: 0.75rem;
+        color: var(--ui-curr-hint);
+    }
+
+    &__dropdown-check {
+        width: 12px;
+        height: 12px;
+        color: var(--ui-curr-dropdown-check);
+        flex-shrink: 0;
+    }
+
+    // ── Divider ───────────────────────────────────────────────────────────────
+    &__divider {
+        width: 1px;
+        align-self: stretch;
+        background: var(--ui-curr-divider);
+        flex-shrink: 0;
+    }
+
+    // ── Input numérico ────────────────────────────────────────────────────────
+    &__input {
         flex: 1;
         border: none;
         outline: none;
-        padding: 14px 0;
-        font-size: 16px;
         background: transparent;
+        color: var(--ui-curr-text);
+        font-family: inherit;
+        font-size: inherit;
+        font-weight: 600;
+        line-height: 1;
+        text-align: right;
+        min-width: 0;
+        letter-spacing: 0.02em;
 
-        @media (max-width: 480px) {
-            font-size: 14px;
+        &::placeholder {
+            color: var(--ui-curr-placeholder);
+            font-weight: 400;
         }
+
+        &:disabled {
+            cursor: not-allowed;
+            color: var(--ui-curr-placeholder);
+        }
+    }
+
+    // ── Ícono moneda ──────────────────────────────────────────────────────────
+    &__icon {
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+        color: var(--ui-curr-icon);
+        pointer-events: none;
+        transition: color 0.2s ease;
+
+        svg {
+            width: 16px;
+            height: 16px;
+        }
+    }
+
+    // ── Footer ────────────────────────────────────────────────────────────────
+    &__footer {
+        min-height: 16px;
+    }
+
+    &__hint {
+        font-size: 0.75rem;
+        color: var(--ui-curr-hint);
+    }
+
+    &__error {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.75rem;
+        color: var(--ui-curr-error);
+
+        svg {
+            flex-shrink: 0;
+        }
+    }
+
+    // ── Estados ───────────────────────────────────────────────────────────────
+    &--focused &__wrapper {
+        border-color: var(--ui-curr-border-focus);
+        box-shadow: var(--ui-curr-shadow-focus);
+    }
+
+    &--focused &__label {
+        color: var(--ui-curr-border-focus);
+    }
+
+    &--focused &__icon {
+        color: var(--ui-curr-icon-focus);
+    }
+
+    &--error &__wrapper {
+        border-color: var(--ui-curr-border-error);
+        box-shadow: var(--ui-curr-shadow-error);
+    }
+
+    &--error &__label {
+        color: var(--ui-curr-border-error);
+    }
+
+    &--disabled &__wrapper {
+        background: var(--ui-curr-bg-disabled);
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+
+    // ── Tamaños ───────────────────────────────────────────────────────────────
+    &--sm {
+        .ui-input-currency__currency {
+            padding: 6px 8px;
+            gap: 3px;
+        }
+
+        .ui-input-currency__input {
+            padding: 6px 8px;
+            font-size: 0.9rem;
+        }
+
+        .ui-input-currency__icon {
+            padding-right: 8px;
+
+            svg {
+                width: 14px;
+                height: 14px;
+            }
+        }
+
+        .ui-input-currency__symbol {
+            font-size: 0.875rem;
+        }
+    }
+
+    &--md {
+        .ui-input-currency__currency {
+            padding: 10px 12px;
+            gap: 4px;
+        }
+
+        .ui-input-currency__input {
+            padding: 10px 10px;
+            font-size: 1rem;
+        }
+
+        .ui-input-currency__icon {
+            padding-right: 12px;
+        }
+    }
+
+    &--lg {
+        .ui-input-currency__currency {
+            padding: 14px 14px;
+            gap: 5px;
+        }
+
+        .ui-input-currency__input {
+            padding: 14px 12px;
+            font-size: 1.125rem;
+        }
+
+        .ui-input-currency__icon {
+            padding-right: 14px;
+
+            svg {
+                width: 18px;
+                height: 18px;
+            }
+        }
+
+        .ui-input-currency__symbol {
+            font-size: 1.125rem;
+        }
+    }
+}
+
+// ── Animación ─────────────────────────────────────────────────────────────────
+@keyframes dropIn {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+// ── Responsive ────────────────────────────────────────────────────────────────
+@media (max-width: 480px) {
+    .ui-input-currency__input {
+        font-size: 16px !important; // evita zoom iOS
     }
 }

@@ -1,0 +1,51 @@
+<div
+  class="ui-input-date"
+  [class]="'ui-input-date--' + size"
+  [class.ui-input-date--focused]="isFocused()"
+  [class.ui-input-date--has-value]="hasValue()"
+  [class.ui-input-date--error]="hasError()"
+  [class.ui-input-date--disabled]="disabled"
+>
+  <label class="ui-input-date__label" *ngIf="label">
+    {{ label }}
+    <span class="ui-input-date__required" *ngIf="required">*</span>
+  </label>
+
+  <div class="ui-input-date__wrapper">
+    <span class="ui-input-date__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+        <line x1="16" y1="2" x2="16" y2="6"/>
+        <line x1="8" y1="2" x2="8" y2="6"/>
+        <line x1="3" y1="10" x2="21" y2="10"/>
+      </svg>
+    </span>
+
+    <input
+      class="ui-input-date__input"
+      type="date"
+      [value]="internalValue()"
+      [disabled]="disabled"
+      [required]="required"
+      [min]="minDate"
+      [max]="maxDate"
+      (focus)="onFocus()"
+      (blur)="onBlur()"
+      (change)="onInputChange($event)"
+    />
+  </div>
+
+  <div class="ui-input-date__footer">
+    <span class="ui-input-date__error" *ngIf="hasError()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="2.5">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      {{ errorMessage }}
+    </span>
+    <span class="ui-input-date__hint" *ngIf="hint && !hasError()">{{ hint }}</span>
+  </div>
+</div>

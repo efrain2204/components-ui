@@ -1,0 +1,39 @@
+<div class="ui-otp" [class]="'ui-otp--' + size" [class.ui-otp--error]="hasError()" [class.ui-otp--disabled]="disabled"
+    [class.ui-otp--complete]="isComplete()">
+    <!-- Label -->
+    <div class="ui-otp__label" *ngIf="label">
+        {{ label }}
+        <span class="ui-otp__required" *ngIf="required">*</span>
+    </div>
+
+    <!-- Campos de dígitos -->
+    <div class="ui-otp__fields">
+        <input #digitInput *ngFor="let slot of slots; let i = index" class="ui-otp__digit"
+            [class.ui-otp__digit--filled]="digits()[i]" [class.ui-otp__digit--focused]="focusedIndex() === i"
+            [type]="mask ? 'password' : 'text'" inputmode="numeric" autocomplete="one-time-code" maxlength="2"
+            [value]="digits()[i]" [disabled]="disabled" (input)="onDigitInput($event, i)"
+            (keydown)="onKeydown($event, i)" (paste)="onPaste($event, i)" (focus)="onFocus(i)" (blur)="onBlur()" />
+    </div>
+
+    <!-- Footer -->
+    <div class="ui-otp__footer">
+        <div class="ui-otp__footer-left">
+            <span class="ui-otp__error" *ngIf="hasError()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2.5">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="8" x2="12" y2="12" />
+                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+                {{ errorMessage }}
+            </span>
+            <span class="ui-otp__hint" *ngIf="hint && !hasError()">{{ hint }}</span>
+        </div>
+
+        <!-- Botón limpiar -->
+        <button *ngIf="isComplete() && !disabled" class="ui-otp__clear" type="button" (click)="clear()">
+            Limpiar
+        </button>
+    </div>
+
+</div>

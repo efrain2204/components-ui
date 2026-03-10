@@ -1,0 +1,373 @@
+:host {
+    --ui-fu-font: inherit;
+    --ui-fu-label: #4b5563;
+    --ui-fu-required: #ef4444;
+    --ui-fu-hint: #6b7280;
+    --ui-fu-error: #ef4444;
+
+    --ui-fu-border: #d1d5db;
+    --ui-fu-border-focus: #2563eb;
+    --ui-fu-border-drag: #2563eb;
+    --ui-fu-border-error: #ef4444;
+
+    --ui-fu-bg: #ffffff;
+    --ui-fu-bg-drag: #eff6ff;
+    --ui-fu-bg-disabled: #f9fafb;
+
+    --ui-fu-icon: #9ca3af;
+    --ui-fu-icon-drag: #2563eb;
+    --ui-fu-text-primary: #374151;
+    --ui-fu-text-secondary: #9ca3af;
+    --ui-fu-link: #2563eb;
+
+    --ui-fu-file-bg: #f9fafb;
+    --ui-fu-file-border: #e5e7eb;
+    --ui-fu-file-name: #111827;
+    --ui-fu-file-size: #6b7280;
+    --ui-fu-file-icon: #6b7280;
+    --ui-fu-file-remove: #9ca3af;
+    --ui-fu-file-remove-hover: #ef4444;
+
+    --ui-fu-btn-bg: #f3f4f6;
+    --ui-fu-btn-bg-hover: #e5e7eb;
+    --ui-fu-btn-text: #374151;
+
+    --ui-fu-shadow-focus: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    --ui-fu-shadow-error: 0 0 0 3px rgba(239, 68, 68, 0.15);
+    --ui-fu-radius: 8px;
+
+    display: block;
+    font-family: var(--ui-fu-font);
+}
+
+.ui-file-upload {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+
+    // ── Label ─────────────────────────────────────────────────────────────────
+    &__label {
+        font-size: 0.8125rem;
+        font-weight: 500;
+        color: var(--ui-fu-label);
+        line-height: 1;
+    }
+
+    &__required {
+        color: var(--ui-fu-required);
+        margin-left: 2px;
+    }
+
+    // ── Input nativo oculto ───────────────────────────────────────────────────
+    &__native {
+        display: none;
+    }
+
+    // ── Dropzone ──────────────────────────────────────────────────────────────
+    &__dropzone {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        border: 1.5px dashed var(--ui-fu-border);
+        border-radius: var(--ui-fu-radius);
+        background: var(--ui-fu-bg);
+        cursor: pointer;
+        outline: none;
+        transition:
+            border-color 0.2s ease,
+            background 0.2s ease,
+            box-shadow 0.2s ease;
+        text-align: center;
+
+        &:hover,
+        &--focused {
+            border-color: var(--ui-fu-border-focus);
+            box-shadow: var(--ui-fu-shadow-focus);
+        }
+
+        &--dragging {
+            border-color: var(--ui-fu-border-drag);
+            background: var(--ui-fu-bg-drag);
+            box-shadow: var(--ui-fu-shadow-focus);
+
+            .ui-file-upload__dropzone-icon svg {
+                color: var(--ui-fu-icon-drag);
+                transform: translateY(-4px);
+            }
+        }
+    }
+
+    &__dropzone-icon {
+        svg {
+            color: var(--ui-fu-icon);
+            transition: color 0.2s ease, transform 0.2s ease;
+        }
+    }
+
+    &__dropzone-text {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    &__dropzone-primary {
+        font-size: 0.875rem;
+        color: var(--ui-fu-text-primary);
+        font-weight: 500;
+    }
+
+    &__dropzone-link {
+        color: var(--ui-fu-link);
+        text-decoration: underline;
+        text-underline-offset: 2px;
+    }
+
+    &__dropzone-secondary {
+        font-size: 0.75rem;
+        color: var(--ui-fu-text-secondary);
+    }
+
+    // ── Botón simple ──────────────────────────────────────────────────────────
+    &__btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 16px;
+        border: 1.5px solid var(--ui-fu-border);
+        border-radius: var(--ui-fu-radius);
+        background: var(--ui-fu-btn-bg);
+        color: var(--ui-fu-btn-text);
+        font-family: inherit;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.15s ease, border-color 0.15s ease;
+
+        svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        &:hover:not(:disabled) {
+            background: var(--ui-fu-btn-bg-hover);
+            border-color: var(--ui-fu-border-focus);
+        }
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    }
+
+    // ── Lista de archivos ─────────────────────────────────────────────────────
+    &__list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    &__file {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        background: var(--ui-fu-file-bg);
+        border: 1px solid var(--ui-fu-file-border);
+        border-radius: var(--ui-fu-radius);
+        animation: fileIn 0.2s ease;
+    }
+
+    &__file-thumb {
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        overflow: hidden;
+        background: #e5e7eb;
+
+        svg {
+            color: var(--ui-fu-file-icon);
+        }
+    }
+
+    &__file-preview {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    &__file-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+    }
+
+    &__file-name {
+        font-size: 0.8125rem;
+        font-weight: 500;
+        color: var(--ui-fu-file-name);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    &__file-size {
+        font-size: 0.75rem;
+        color: var(--ui-fu-file-size);
+    }
+
+    &__file-remove {
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        color: var(--ui-fu-file-remove);
+        padding: 4px;
+        border-radius: 4px;
+        transition: color 0.15s ease;
+
+        svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        &:hover:not(:disabled) {
+            color: var(--ui-fu-file-remove-hover);
+        }
+
+        &:disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+    }
+
+    // ── Footer ────────────────────────────────────────────────────────────────
+    &__footer {
+        min-height: 16px;
+    }
+
+    &__hint {
+        font-size: 0.75rem;
+        color: var(--ui-fu-hint);
+    }
+
+    &__error {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.75rem;
+        color: var(--ui-fu-error);
+
+        svg {
+            flex-shrink: 0;
+        }
+    }
+
+    // ── Estados ───────────────────────────────────────────────────────────────
+    &--error &__dropzone {
+        border-color: var(--ui-fu-border-error);
+        box-shadow: var(--ui-fu-shadow-error);
+    }
+
+    &--disabled {
+        opacity: 0.6;
+
+        .ui-file-upload__dropzone {
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+    }
+
+    // ── Tamaños ───────────────────────────────────────────────────────────────
+    &--sm {
+        .ui-file-upload__dropzone {
+            padding: 20px 16px;
+        }
+
+        .ui-file-upload__dropzone-icon svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        .ui-file-upload__file-thumb {
+            width: 32px;
+            height: 32px;
+
+            svg {
+                width: 18px;
+                height: 18px;
+            }
+        }
+    }
+
+    &--md {
+        .ui-file-upload__dropzone {
+            padding: 28px 24px;
+        }
+
+        .ui-file-upload__dropzone-icon svg {
+            width: 36px;
+            height: 36px;
+        }
+
+        .ui-file-upload__file-thumb {
+            width: 40px;
+            height: 40px;
+
+            svg {
+                width: 22px;
+                height: 22px;
+            }
+        }
+    }
+
+    &--lg {
+        .ui-file-upload__dropzone {
+            padding: 40px 32px;
+        }
+
+        .ui-file-upload__dropzone-icon svg {
+            width: 44px;
+            height: 44px;
+        }
+
+        .ui-file-upload__file-thumb {
+            width: 48px;
+            height: 48px;
+
+            svg {
+                width: 26px;
+                height: 26px;
+            }
+        }
+    }
+}
+
+// ── Animaciones ───────────────────────────────────────────────────────────────
+@keyframes fileIn {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+// ── Responsive ────────────────────────────────────────────────────────────────
+@media (max-width: 480px) {
+    .ui-file-upload__dropzone-primary {
+        font-size: 0.8125rem;
+    }
+}

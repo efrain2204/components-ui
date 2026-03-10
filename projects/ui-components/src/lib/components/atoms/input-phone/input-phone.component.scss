@@ -1,0 +1,345 @@
+:host {
+    --ui-phone-font: inherit;
+    --ui-phone-label: #4b5563;
+    --ui-phone-border: #d1d5db;
+    --ui-phone-border-focus: #2563eb;
+    --ui-phone-border-error: #ef4444;
+    --ui-phone-bg: #ffffff;
+    --ui-phone-bg-disabled: #f3f4f6;
+    --ui-phone-bg-country: #f9fafb;
+    --ui-phone-bg-dropdown: #ffffff;
+    --ui-phone-text: #111827;
+    --ui-phone-text-code: #374151;
+    --ui-phone-placeholder: #9ca3af;
+    --ui-phone-icon: #9ca3af;
+    --ui-phone-icon-focus: #2563eb;
+    --ui-phone-divider: #e5e7eb;
+    --ui-phone-hint: #6b7280;
+    --ui-phone-error: #ef4444;
+    --ui-phone-required: #ef4444;
+    --ui-phone-dropdown-hover: #f3f4f6;
+    --ui-phone-dropdown-active: #eff6ff;
+    --ui-phone-shadow-focus: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    --ui-phone-shadow-error: 0 0 0 3px rgba(239, 68, 68, 0.15);
+    --ui-phone-shadow-dropdown: 0 8px 24px rgba(0, 0, 0, 0.12);
+    --ui-phone-radius: 8px;
+
+    display: block;
+    font-family: var(--ui-phone-font);
+}
+
+.ui-input-phone {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+
+    // ── Label ─────────────────────────────────────────────────────────────────
+    &__label {
+        font-size: 0.8125rem;
+        font-weight: 500;
+        color: var(--ui-phone-label);
+        line-height: 1;
+        transition: color 0.2s ease;
+    }
+
+    &__required {
+        color: var(--ui-phone-required);
+        margin-left: 2px;
+    }
+
+    // ── Wrapper ───────────────────────────────────────────────────────────────
+    &__wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+        background: var(--ui-phone-bg);
+        border: 1.5px solid var(--ui-phone-border);
+        border-radius: var(--ui-phone-radius);
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        overflow: visible;
+    }
+
+    // ── Selector de país ──────────────────────────────────────────────────────
+    &__country {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        flex-shrink: 0;
+        cursor: pointer;
+        background: var(--ui-phone-bg-country);
+        border-radius: calc(var(--ui-phone-radius) - 2px) 0 0 calc(var(--ui-phone-radius) - 2px);
+        transition: background 0.15s ease;
+        user-select: none;
+
+        &:hover {
+            background: darken(#f9fafb, 3%);
+        }
+    }
+
+    &__flag {
+        font-size: 1.1em;
+        line-height: 1;
+    }
+
+    &__dial-code {
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: var(--ui-phone-text-code);
+        white-space: nowrap;
+    }
+
+    &__chevron {
+        width: 12px;
+        height: 12px;
+        color: var(--ui-phone-icon);
+        transition: transform 0.2s ease;
+        flex-shrink: 0;
+
+        &--open {
+            transform: rotate(180deg);
+        }
+    }
+
+    // ── Divider ───────────────────────────────────────────────────────────────
+    &__divider {
+        width: 1px;
+        align-self: stretch;
+        background: var(--ui-phone-divider);
+        flex-shrink: 0;
+    }
+
+    // ── Input ─────────────────────────────────────────────────────────────────
+    &__input {
+        flex: 1;
+        border: none;
+        outline: none;
+        background: transparent;
+        color: var(--ui-phone-text);
+        font-family: inherit;
+        font-size: inherit;
+        line-height: 1;
+        min-width: 0;
+
+        &::placeholder {
+            color: var(--ui-phone-placeholder);
+        }
+
+        &:disabled {
+            cursor: not-allowed;
+            color: var(--ui-phone-placeholder);
+        }
+    }
+
+    // ── Ícono teléfono ────────────────────────────────────────────────────────
+    &__icon {
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+        color: var(--ui-phone-icon);
+        pointer-events: none;
+        transition: color 0.2s ease;
+
+        svg {
+            width: 15px;
+            height: 15px;
+        }
+    }
+
+    // ── Dropdown ──────────────────────────────────────────────────────────────
+    &__dropdown {
+        position: absolute;
+        top: calc(100% + 6px);
+        left: 0;
+        min-width: 220px;
+        background: var(--ui-phone-bg-dropdown);
+        border: 1.5px solid var(--ui-phone-border);
+        border-radius: var(--ui-phone-radius);
+        box-shadow: var(--ui-phone-shadow-dropdown);
+        z-index: 1000;
+        max-height: 220px;
+        overflow-y: auto;
+        animation: dropdownIn 0.15s ease;
+
+        &::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background: var(--ui-phone-divider);
+            border-radius: 4px;
+        }
+    }
+
+    &__dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 12px;
+        cursor: pointer;
+        transition: background 0.1s ease;
+
+        &:hover {
+            background: var(--ui-phone-dropdown-hover);
+        }
+
+        &--active {
+            background: var(--ui-phone-dropdown-active);
+        }
+    }
+
+    &__dropdown-flag {
+        font-size: 1.1em;
+    }
+
+    &__dropdown-name {
+        flex: 1;
+        font-size: 0.8125rem;
+        color: var(--ui-phone-text);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    &__dropdown-code {
+        font-size: 0.75rem;
+        color: var(--ui-phone-hint);
+        font-weight: 500;
+    }
+
+    // ── Footer ────────────────────────────────────────────────────────────────
+    &__footer {
+        min-height: 16px;
+    }
+
+    &__hint {
+        font-size: 0.75rem;
+        color: var(--ui-phone-hint);
+    }
+
+    &__error {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.75rem;
+        color: var(--ui-phone-error);
+
+        svg {
+            flex-shrink: 0;
+        }
+    }
+
+    // ── Estados ───────────────────────────────────────────────────────────────
+    &--focused &__wrapper {
+        border-color: var(--ui-phone-border-focus);
+        box-shadow: var(--ui-phone-shadow-focus);
+    }
+
+    &--focused &__label {
+        color: var(--ui-phone-border-focus);
+    }
+
+    &--focused &__icon {
+        color: var(--ui-phone-icon-focus);
+    }
+
+    &--error &__wrapper {
+        border-color: var(--ui-phone-border-error);
+        box-shadow: var(--ui-phone-shadow-error);
+    }
+
+    &--error &__label {
+        color: var(--ui-phone-border-error);
+    }
+
+    &--disabled &__wrapper {
+        background: var(--ui-phone-bg-disabled);
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+
+    // ── Tamaños ───────────────────────────────────────────────────────────────
+    &--sm {
+        .ui-input-phone__country {
+            padding: 6px 8px;
+        }
+
+        .ui-input-phone__input {
+            padding: 6px 8px;
+            font-size: 0.8125rem;
+        }
+
+        .ui-input-phone__icon {
+            padding-right: 8px;
+
+            svg {
+                width: 13px;
+                height: 13px;
+            }
+        }
+    }
+
+    &--md {
+        .ui-input-phone__country {
+            padding: 10px 12px;
+        }
+
+        .ui-input-phone__input {
+            padding: 10px 10px;
+            font-size: 0.9375rem;
+        }
+
+        .ui-input-phone__icon {
+            padding-right: 12px;
+        }
+    }
+
+    &--lg {
+        .ui-input-phone__country {
+            padding: 14px 14px;
+        }
+
+        .ui-input-phone__input {
+            padding: 14px 12px;
+            font-size: 1rem;
+        }
+
+        .ui-input-phone__icon {
+            padding-right: 14px;
+
+            svg {
+                width: 17px;
+                height: 17px;
+            }
+        }
+    }
+}
+
+// ── Animación dropdown ────────────────────────────────────────────────────────
+@keyframes dropdownIn {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+// ── Responsive ────────────────────────────────────────────────────────────────
+@media (max-width: 480px) {
+    .ui-input-phone {
+        &__input {
+            font-size: 16px !important;
+        }
+
+        // evita zoom iOS
+
+        &__dropdown {
+            min-width: 180px;
+            max-height: 180px;
+        }
+    }
+}

@@ -1,0 +1,60 @@
+<div
+  class="ui-textarea"
+  [class]="'ui-textarea--' + size"
+  [class.ui-textarea--focused]="isFocused()"
+  [class.ui-textarea--has-value]="hasValue()"
+  [class.ui-textarea--error]="hasError() || isOverLimit()"
+  [class.ui-textarea--disabled]="disabled"
+  [class.ui-textarea--auto-resize]="autoResize"
+>
+  <!-- Label -->
+  <label class="ui-textarea__label" *ngIf="label">
+    {{ label }}
+    <span class="ui-textarea__required" *ngIf="required">*</span>
+  </label>
+
+  <!-- Wrapper -->
+  <div class="ui-textarea__wrapper">
+    <textarea
+      class="ui-textarea__input"
+      [placeholder]="placeholder"
+      [value]="internalValue()"
+      [disabled]="disabled"
+      [required]="required"
+      [rows]="rows"
+      [attr.maxlength]="maxLength > 0 ? maxLength : null"
+      [style.resize]="autoResize ? 'none' : resize"
+      (focus)="onFocus()"
+      (blur)="onBlur()"
+      (input)="onInputChange($event)"
+    ></textarea>
+  </div>
+
+  <!-- Footer -->
+  <div class="ui-textarea__footer">
+    <div class="ui-textarea__footer-left">
+      <!-- Error -->
+      <span class="ui-textarea__error" *ngIf="hasError()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
+             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        {{ errorMessage }}
+      </span>
+      <!-- Hint -->
+      <span class="ui-textarea__hint" *ngIf="hint && !hasError()">{{ hint }}</span>
+    </div>
+
+    <!-- Contador de caracteres -->
+    <span
+      class="ui-textarea__counter"
+      *ngIf="maxLength > 0"
+      [class.ui-textarea__counter--over]="isOverLimit()"
+    >
+      {{ charCount() }} / {{ maxLength }}
+    </span>
+  </div>
+
+</div>

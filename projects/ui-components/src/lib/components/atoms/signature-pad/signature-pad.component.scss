@@ -1,0 +1,240 @@
+:host {
+    --ui-sig-font: inherit;
+    --ui-sig-label: #4b5563;
+    --ui-sig-required: #ef4444;
+    --ui-sig-hint: #6b7280;
+    --ui-sig-error: #ef4444;
+
+    --ui-sig-border: #d1d5db;
+    --ui-sig-border-focus: #2563eb;
+    --ui-sig-border-drawing: #2563eb;
+    --ui-sig-border-signed: #16a34a;
+    --ui-sig-border-error: #ef4444;
+
+    --ui-sig-bg: #ffffff;
+    --ui-sig-bg-drawing: #fafeff;
+    --ui-sig-bg-signed: #f0fdf4;
+    --ui-sig-bg-disabled: #f9fafb;
+
+    --ui-sig-placeholder: #d1d5db;
+    --ui-sig-placeholder-icon: #d1d5db;
+
+    --ui-sig-line: #e5e7eb;
+    --ui-sig-clear-text: #6b7280;
+    --ui-sig-clear-hover: #ef4444;
+
+    --ui-sig-shadow-focus: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    --ui-sig-shadow-drawing: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    --ui-sig-shadow-error: 0 0 0 3px rgba(239, 68, 68, 0.15);
+    --ui-sig-shadow-signed: 0 0 0 3px rgba(22, 163, 74, 0.12);
+
+    --ui-sig-radius: 8px;
+
+    display: block;
+    font-family: var(--ui-sig-font);
+}
+
+.ui-signature {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+
+    // ── Label ─────────────────────────────────────────────────────────────────
+    &__label {
+        font-size: 0.8125rem;
+        font-weight: 500;
+        color: var(--ui-sig-label);
+        line-height: 1;
+        transition: color 0.2s ease;
+    }
+
+    &__required {
+        color: var(--ui-sig-required);
+        margin-left: 2px;
+    }
+
+    // ── Wrapper ───────────────────────────────────────────────────────────────
+    &__wrapper {
+        position: relative;
+        border: 1.5px solid var(--ui-sig-border);
+        border-radius: var(--ui-sig-radius);
+        background: var(--ui-sig-bg);
+        overflow: hidden;
+        transition:
+            border-color 0.2s ease,
+            background 0.2s ease,
+            box-shadow 0.2s ease;
+
+        // Línea base de firma
+        &::after {
+            content: '';
+            position: absolute;
+            bottom: 36px;
+            left: 5%;
+            width: 90%;
+            height: 1px;
+            background: var(--ui-sig-line);
+            pointer-events: none;
+        }
+    }
+
+    // ── Placeholder ───────────────────────────────────────────────────────────
+    &__placeholder {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        pointer-events: none;
+        color: var(--ui-sig-placeholder);
+
+        svg {
+            width: 28px;
+            height: 28px;
+            color: var(--ui-sig-placeholder-icon);
+        }
+
+        span {
+            font-size: 0.875rem;
+        }
+    }
+
+    // ── Canvas ────────────────────────────────────────────────────────────────
+    &__canvas {
+        display: block;
+        width: 100%;
+        touch-action: none; // previene scroll al firmar en móvil
+    }
+
+    // ── Botón limpiar ─────────────────────────────────────────────────────────
+    &__actions {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+    }
+
+    &__clear {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 10px;
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-family: inherit;
+        color: var(--ui-sig-clear-text);
+        cursor: pointer;
+        backdrop-filter: blur(4px);
+        transition: color 0.15s ease, border-color 0.15s ease;
+
+        svg {
+            width: 13px;
+            height: 13px;
+        }
+
+        &:hover {
+            color: var(--ui-sig-clear-hover);
+            border-color: var(--ui-sig-clear-hover);
+        }
+    }
+
+    // ── Footer ────────────────────────────────────────────────────────────────
+    &__footer {
+        min-height: 16px;
+    }
+
+    &__hint {
+        font-size: 0.75rem;
+        color: var(--ui-sig-hint);
+    }
+
+    &__error {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.75rem;
+        color: var(--ui-sig-error);
+
+        svg {
+            flex-shrink: 0;
+        }
+    }
+
+    // ── Estados ───────────────────────────────────────────────────────────────
+    &--drawing &__wrapper {
+        border-color: var(--ui-sig-border-drawing);
+        background: var(--ui-sig-bg-drawing);
+        box-shadow: var(--ui-sig-shadow-drawing);
+        cursor: crosshair;
+    }
+
+    &--drawing &__label {
+        color: var(--ui-sig-border-focus);
+    }
+
+    &--has-value:not(&--drawing) &__wrapper {
+        border-color: var(--ui-sig-border-signed);
+        background: var(--ui-sig-bg-signed);
+        box-shadow: var(--ui-sig-shadow-signed);
+    }
+
+    &--has-value:not(&--drawing) &__label {
+        color: var(--ui-sig-border-signed);
+    }
+
+    &--focused &__wrapper {
+        box-shadow: var(--ui-sig-shadow-focus);
+    }
+
+    &--error &__wrapper {
+        border-color: var(--ui-sig-border-error);
+        box-shadow: var(--ui-sig-shadow-error);
+    }
+
+    &--error &__label {
+        color: var(--ui-sig-border-error);
+    }
+
+    &--disabled {
+        opacity: 0.6;
+
+        &__wrapper {
+            cursor: not-allowed;
+        }
+
+        &__canvas {
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+    }
+
+    // ── Tamaños ───────────────────────────────────────────────────────────────
+    &--sm &__canvas {
+        min-height: 100px;
+    }
+
+    &--md &__canvas {
+        min-height: 160px;
+    }
+
+    &--lg &__canvas {
+        min-height: 220px;
+    }
+}
+
+// ── Responsive ────────────────────────────────────────────────────────────────
+@media (max-width: 480px) {
+    .ui-signature {
+        &__placeholder span {
+            font-size: 0.8125rem;
+        }
+
+        &--md &__canvas {
+            min-height: 130px;
+        }
+    }
+}

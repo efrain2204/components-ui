@@ -1,25 +1,22 @@
-import { CommonModule, NgClass, NgIf } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Component, computed, EventEmitter, forwardRef, Input, Output, signal } from '@angular/core';
-import { ControlValueAccessor, FormControl, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
-
-export type InputTextType = 'text' | 'email' | 'number' | 'tel' | 'url';
-
+import { FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'ui-input-text',
+  selector: 'ui-textarea',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, FormsModule],
-  templateUrl: './input-text.component.html',
-  styleUrl: './input-text.component.scss',
+  templateUrl: './textarea.component.html',
+  styleUrl: './textarea.component.scss',
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => InputTextComponent),
+      useExisting: forwardRef(() => TextareaComponent),
       multi: true,
     },
   ],
 })
-export class InputTextComponent implements ControlValueAccessor {
+export class TextareaComponent {
   @Input() label: string = '';
   @Input() placeholder: string = '';
   @Input() hint: string = '';
@@ -27,28 +24,20 @@ export class InputTextComponent implements ControlValueAccessor {
   @Input() disabled: boolean = false;
   @Input() required: boolean = false;
   @Input() size: 'sm' | 'md' | 'lg' = 'md';
-  @Input() type: InputTextType = 'text';
 
-  /** Ícono SVG path string para el prefijo (opcional) */
-  @Input() prefixIcon: 'user' | 'email' | 'phone' | 'globe' | 'id' | 'search' | '' = '';
-
-  /** Texto fijo de prefijo (ej: "https://") */
-  @Input() prefixText: string = '';
-
-  /** Texto fijo de sufijo (ej: "@gmail.com") */
-  @Input() suffixText: string = '';
+  /** Número de filas visible inicialmente */
+  @Input() rows: number = 4;
 
   /** Máximo de caracteres (0 = sin límite) */
   @Input() maxLength: number = 0;
 
-  /** Muestra contador de caracteres */
-  @Input() showCounter: boolean = false;
+  /** Permite al usuario redimensionar */
+  @Input() resize: 'none' | 'vertical' | 'both' = 'vertical';
 
-  /** Permite limpiar el campo con botón X */
-  @Input() clearable: boolean = false;
+  /** Crece automáticamente con el contenido */
+  @Input() autoResize: boolean = false;
 
   @Output() valueChange = new EventEmitter<string>();
-  @Output() enterPressed = new EventEmitter<string>();
 
   isFocused = signal(false);
   internalValue = signal('');
@@ -57,8 +46,6 @@ export class InputTextComponent implements ControlValueAccessor {
   hasValue = computed(() => !!this.internalValue());
   charCount = computed(() => this.internalValue().length);
   isOverLimit = computed(() => this.maxLength > 0 && this.charCount() > this.maxLength);
-  hasSuffix = computed(() => !!this.suffixText || this.clearable);
-  hasPrefix = computed(() => !!this.prefixIcon || !!this.prefixText);
 
   private onChange: (value: string) => void = () => { };
   private onTouched: () => void = () => { };
@@ -70,23 +57,17 @@ export class InputTextComponent implements ControlValueAccessor {
     this.onTouched();
   }
 
-  onInput(event: Event): void {
-    const value = (event.target as HTMLInputElement).value;
+  onInputChange(event: Event): void {
+    const el = event.target as HTMLTextAreaElement;
+    const value = el.value;
     this.internalValue.set(value);
     this.onChange(value);
     this.valueChange.emit(value);
-  }
 
-  onKeydown(event: KeyboardEvent): void {
-    if (event.key === 'Enter') {
-      this.enterPressed.emit(this.internalValue());
+    if (this.autoResize) {
+      el.style.height = 'auto';
+      el.style.height = `${el.scrollHeight}px`;
     }
-  }
-
-  clear(): void {
-    this.internalValue.set('');
-    this.onChange('');
-    this.valueChange.emit('');
   }
 
   // ── ControlValueAccessor ──────────────────────────────────────────────────

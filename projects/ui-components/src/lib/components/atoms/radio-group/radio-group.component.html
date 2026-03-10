@@ -1,0 +1,49 @@
+<div class="ui-radio-group" [class]="'ui-radio-group--' + size"
+    [class.ui-radio-group--horizontal]="direction === 'horizontal'" [class.ui-radio-group--error]="hasError()"
+    [class.ui-radio-group--disabled]="disabled" role="radiogroup" [attr.aria-label]="label"
+    [attr.aria-required]="required">
+    <!-- Label del grupo -->
+    <div class="ui-radio-group__label" *ngIf="label">
+        {{ label }}
+        <span class="ui-radio-group__required" *ngIf="required">*</span>
+    </div>
+
+    <!-- Opciones -->
+    <div class="ui-radio-group__options">
+        <div class="ui-radio-group__item" *ngFor="let option of options; let i = index"
+            [class.ui-radio-group__item--selected]="isSelected(option)"
+            [class.ui-radio-group__item--focused]="focusedValue() === option.value"
+            [class.ui-radio-group__item--disabled]="isDisabled(option)">
+            <!-- Control visual -->
+            <div class="ui-radio-group__control" role="radio" [attr.aria-checked]="isSelected(option)"
+                [attr.aria-disabled]="isDisabled(option)"
+                [attr.tabindex]="isDisabled(option) ? -1 : (isSelected(option) ? 0 : (i === 0 ? 0 : -1))"
+                [attr.data-radio-index]="i" (click)="select(option)" (focus)="onFocus(option.value)" (blur)="onBlur()"
+                (keydown)="onKeydown($event, option, i)">
+                <!-- Punto interior -->
+                <div class="ui-radio-group__dot" *ngIf="isSelected(option)"></div>
+            </div>
+
+            <!-- Texto -->
+            <div class="ui-radio-group__content" (click)="select(option)">
+                <span class="ui-radio-group__option-label">{{ option.label }}</span>
+                <span class="ui-radio-group__option-hint" *ngIf="option.hint">{{ option.hint }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="ui-radio-group__footer">
+        <span class="ui-radio-group__error" *ngIf="hasError()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.5">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            {{ errorMessage }}
+        </span>
+        <span class="ui-radio-group__hint" *ngIf="hint && !hasError()">{{ hint }}</span>
+    </div>
+
+</div>
